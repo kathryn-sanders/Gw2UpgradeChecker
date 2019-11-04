@@ -1,0 +1,22 @@
+{
+  "name": "gw2upgradechecker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gw2UpgradeChecker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kathryn-sanders/Gw2UpgradeChecker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kathryn-sanders/Gw2UpgradeChecker/issues"
+  },
+  "homepage": "https://github.com/kathryn-sanders/Gw2UpgradeChecker#readme",
+  "dependencies": {
+    "gw2api-client": "^7.4.1"
+  }
+}
