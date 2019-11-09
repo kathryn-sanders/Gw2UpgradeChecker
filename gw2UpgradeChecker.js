@@ -12,11 +12,13 @@ gw2api.authenticate("D2B5389F-F40A-4547-9D2C-FAC66DACEB63374FC165-8917-4A24-9DB0
 
 
 gw2api.account().bank().get().then((bank) =>{
-    console.log(bank);
+    // console.log(bank);
     
     let itemsToCheckRarity = new Set();
     let equipUpgrades = {};
     const ectoItemId = 19721;
+
+    let itemIDtoDetailsDictionary = {};
 
     let itemsToCheckTP = [];
 
@@ -24,26 +26,35 @@ gw2api.account().bank().get().then((bank) =>{
 
     bank.forEach(item => {
         if(itemIsTradableWithUpgrades(item)){
-            itemsToCheckRarity.add(item.id);     
+            itemsToCheckRarity.add(item.id);
+            itemsToCheckRarity.add(item.upgrades[0]);     
         };        
     });
 
     gw2api.items().many(Array.from(itemsToCheckRarity)).then((itemDetails) => {
-        console.log(itemDetails);
+        // console.log(itemDetails);
 
         itemDetails.forEach(item => {
-            if(itemIsExotic(item)){            
+            if(!itemIsUpgradeComponent(item) && itemIsExotic(item)){            
                 itemsToCheckTP.push(item.id);
                 itemsToCheckTP.push(item.details.suffix_item_id);
                 equipUpgrades[item.id]=item.details.suffix_item_id;
             };
+            
+            itemIDtoDetailsDictionary[item.id] = item;
         });
 
         return gw2api.commerce().prices().many(itemsToCheckTP)
+        .then((priceInfo) => {
+            return {
+                priceInfo,
+                itemIDtoDetailsDictionary,
+            };
+        });
 
-    }).then((priceInfo) =>{
+    }).then(({priceInfo, itemIDtoDetailsDictionary}) =>{
 
-        console.log(priceInfo);  
+        // console.log(priceInfo);  
         
         let priceInfoDictionary = {};
 
@@ -56,6 +67,10 @@ gw2api.account().bank().get().then((bank) =>{
         Object.keys(equipUpgrades).forEach(equipId => {
             let upgradeId = equipUpgrades[equipId];
             let newCompareData = {
+                equip: itemIDtoDetailsDictionary[equipId],
+
+                upgrade: itemIDtoDetailsDictionary[upgradeId],
+
                 sellToTP:{
                     buyPrice: priceInfoDictionary[equipId].buys.unit_price,
                     sellPrice: priceInfoDictionary[equipId].sells.unit_price,
@@ -90,4 +105,8 @@ function itemIsTradableWithUpgrades(item){
 
 function itemIsExotic(item){
     return (item.rarity === "Exotic");
+}
+
+function itemIsUpgradeComponent(item){
+    return (item.type === "UpgradeComponent");
 }
