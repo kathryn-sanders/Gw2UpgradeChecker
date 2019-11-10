@@ -109,20 +109,26 @@ function displayResultsToTable(priceCompareData) {
         let newRow = $("<tr>");
 
         newRow.append($("<td>", {
-            html: `<img src="${resultRow.equip.icon}"/> ${resultRow.equip.name} <br/>
-            <img src="${resultRow.upgrade.icon}"/> ${resultRow.upgrade.name}`
+            html: `<div class="detailBox"><img class="equipImg" src="${resultRow.equip.icon}"/> <img class="upgradeImg" src="${resultRow.upgrade.icon}"/>
+            <div class="itemText"><div>${resultRow.equip.name}</div><div>${resultRow.upgrade.name}</div></div></div>`
         }))
         newRow.append($("<td>", {
-            html: `<div class="buyPrice">${GetCoinString(resultRow.sellToTP.buyPrice)}</div>
-                <div class="sellPrice">${GetCoinString(resultRow.sellToTP.sellPrice)}</div>`
+            html: `<div class="price">
+                <div class="buyPrice">Buy: ${GetCoinString(resultRow.sellToTP.buyPrice)}</div>
+                <div class="sellPrice">Sell: ${GetCoinString(resultRow.sellToTP.sellPrice)}</div>
+                </div>`
         }))
         newRow.append($("<td>", {
-            html: `<div class="buyPrice">${GetCoinString(resultRow.extractUpgradeThenSalvage.buyPrice)}</div>
-                <div class="sellPrice">${GetCoinString(resultRow.extractUpgradeThenSalvage.sellPrice)}</div>`
+            html: `<div class="price">
+                <div class="buyPrice">Buy: ${GetCoinString(resultRow.extractUpgradeThenSalvage.buyPrice)}</div>
+                <div class="sellPrice">Sell: ${GetCoinString(resultRow.extractUpgradeThenSalvage.sellPrice)}</div>
+                </div>`
         }))
         newRow.append($("<td>", {
-            html: `<div class="buyPrice">${GetCoinString(resultRow.blackLionSalvage.buyPrice)}</div>
-                <div class="sellPrice">${GetCoinString(resultRow.blackLionSalvage.sellPrice)}</div>`
+            html: `<div class="price">
+                <div class="buyPrice">Buy: ${GetCoinString(resultRow.blackLionSalvage.buyPrice)}</div>
+                <div class="sellPrice">Sell: ${GetCoinString(resultRow.blackLionSalvage.sellPrice)}</div>
+                </div>`
         }))
 
         $("#resultsTbody").append(newRow);
