@@ -10,7 +10,17 @@
 </head>
 
 <body>
-  <h1>Hello World</h1>
+  <h1>GW2 Upgrade Checker</h1>
+
+<div>
+  <input type="text" id="apiKeyInput" name="apiKey" value="Enter Your Api Key Here">
+  <button onclick="GetApiKeyAndRunTool()" type="button" value="Submit">Submit</button>
+</div>
+
+  <div>
+    <input onchange="OnBuySellToggle()" checked type="checkbox" name="Buy" id="BuyCheckbox" value="Buy"> Buy Price <br />
+    <input onchange="OnBuySellToggle()" checked type="checkbox" name="Sell" id="SellCheckbox" value="Sell"> Sell Price <br />
+  </div>
 
   <table style="width:100%">
     <thead>
