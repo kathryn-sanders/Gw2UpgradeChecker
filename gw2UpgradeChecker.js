@@ -1,15 +1,3 @@
-// alert("It works!")
-
-// D2B5389F-F40A-4547-9D2C-FAC66DACEB63374FC165-8917-4A24-9DB0-74602CBF4253
-
-// gw2api.authenticate('F8F1CE4C-FCE8-C64D-AD5B-EC5DAAD6420CEB195D1A-7771-468B-BD76-57B88CD4EA37')
-
-// gw2api.items().ids().then((items) => {
-//     console.log(items)
-// })
-// gw2api.account().blob().then((info) => {
-//     console.log(info)
-// }) 
 
 function GetApiKeyAndRunTool() {
 
@@ -20,7 +8,6 @@ function GetApiKeyAndRunTool() {
     gw2api.authenticate(apiKey)
 
     gw2api.account().bank().get().then((bank) => {
-        // console.log(bank);
 
         let itemsToCheckRarity = new Set();
         let equipUpgrades = {};
@@ -40,7 +27,6 @@ function GetApiKeyAndRunTool() {
         });
 
         gw2api.items().many(Array.from(itemsToCheckRarity)).then((itemDetails) => {
-            // console.log(itemDetails);
 
             itemDetails.forEach(item => {
                 if (!itemIsUpgradeComponent(item) && itemIsExotic(item)) {
@@ -61,8 +47,6 @@ function GetApiKeyAndRunTool() {
                 });
 
         }).then(({ priceInfo, itemIDtoDetailsDictionary }) => {
-
-            // console.log(priceInfo);  
 
             let priceInfoDictionary = {};
 
@@ -96,16 +80,12 @@ function GetApiKeyAndRunTool() {
                 };
 
                 priceCompareData.push(newCompareData);
-                console.log(newCompareData);
             });
             displayResultsToTable(priceCompareData)
         });
 
     });
 }
-
-// itemsToCheck.add(item.upgrades[0]);
-
 
 function itemIsTradableWithUpgrades(item) {
     return (item && !item.binding && item.upgrades);
@@ -124,8 +104,6 @@ function itemIsUpgradeComponent(item) {
 
 
 function displayResultsToTable(priceCompareData) {
-    //     $("#resultsTbody").append($("<tr>", {html: "hello"}))
-    //     $("<tr>", {html: "hello"})
 
     priceCompareData.forEach((resultRow) => {
         let newRow = $("<tr>");
