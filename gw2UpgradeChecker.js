@@ -120,14 +120,18 @@ function displayResultsToTable(priceCompareData) {
         }))
         newRow.append($("<td>", {
             html: `<div class="price">
-                <div class="buyPrice">Buy: ${GetCoinString(resultRow.extractUpgradeThenSalvage.buyPrice)}</div>
-                <div class="sellPrice">Sell: ${GetCoinString(resultRow.extractUpgradeThenSalvage.sellPrice)}</div>
+                <div class="buyPrice">Buy: ${GetCoinString(resultRow.extractUpgradeThenSalvage.buyPrice)} &nbsp;
+                    (${GetComparisonCoinString(resultRow.extractUpgradeThenSalvage.buyPrice - resultRow.sellToTP.buyPrice)})</div>
+                <div class="sellPrice">Sell: ${GetCoinString(resultRow.extractUpgradeThenSalvage.sellPrice)} &nbsp;
+                    (${GetComparisonCoinString(resultRow.extractUpgradeThenSalvage.sellPrice - resultRow.sellToTP.sellPrice)})</div>
                 </div>`
         }))
         newRow.append($("<td>", {
             html: `<div class="price">
-                <div class="buyPrice">Buy: ${GetCoinString(resultRow.blackLionSalvage.buyPrice)}</div>
-                <div class="sellPrice">Sell: ${GetCoinString(resultRow.blackLionSalvage.sellPrice)}</div>
+                <div class="buyPrice">Buy: ${GetCoinString(resultRow.blackLionSalvage.buyPrice)} 
+                    (${GetComparisonCoinString(resultRow.blackLionSalvage.buyPrice - resultRow.sellToTP.buyPrice)})</div>
+                <div class="sellPrice">Sell: ${GetCoinString(resultRow.blackLionSalvage.sellPrice)} 
+                    (${GetComparisonCoinString(resultRow.blackLionSalvage.sellPrice - resultRow.sellToTP.sellPrice)})</div>
                 </div>`
         }))
 
@@ -173,4 +177,19 @@ function GetCoinString(amountInCopper) {
     result += `${copper} <img class="coin" src="https://render.guildwars2.com/file/6CF8F96A3299CFC75D5CC90617C3C70331A1EF0E/156902.png">`
 
     return result;
+}
+
+function GetComparisonCoinString(priceInCopper) {
+    let positive = (priceInCopper >= 0);
+
+    let pricedifference = GetCoinString(Math.abs(priceInCopper));
+
+    if (!positive) {
+        pricedifference = '<span class="negative" title="Less profitable than selling to TP directly"> -' + pricedifference + '</span>';
+    }
+    else {
+        pricedifference = '<span class="positive" title="More profitable than selling to TP directly"> +' + pricedifference + '</span>';
+    }
+
+    return pricedifference;
 }

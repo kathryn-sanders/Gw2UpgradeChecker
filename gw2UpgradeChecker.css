@@ -1,16 +1,25 @@
 body{
     margin: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #252526;
+    color: #858585;
 }
 
 h1 {
+    display: flex;
     margin-top: 50px;
     margin-bottom: 50px;
-    text-align: center;
-    color: blueviolet;
+    justify-content: center;
+    align-items: center;
+    color: #A15A4E;
+    font-size: 60px;
+}
+
+#bltcLogo{
+    height: 150px;
 }
 
 .formContainer{
-    /* margin-left: 150px; */
     height: 100px;
     display: flex;
     flex-direction: row;
@@ -46,6 +55,7 @@ th{
     display: flex;    
     justify-content: center;
     align-items: center;
+    font-size: 16pt;
 }
 
 th img{
@@ -107,4 +117,13 @@ tbody tr{
 .coin{
     width: 17px;
     height: auto;
+}
+
+.positive{
+    color: green;
+    
+}
+
+.negative{
+    color: red;
 }
