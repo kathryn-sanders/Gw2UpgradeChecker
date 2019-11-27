@@ -5,7 +5,28 @@ function GetApiKeyAndRunTool() {
 
     let apiKey = $("#apiKeyInput").val();
 
-    gw2api.authenticate(apiKey)
+    gw2api.authenticate(apiKey);
+
+    gw2api.characters().all().then(characterResultList => {
+        let characterList = new Set();
+        characterResultList.forEach(character => {
+            characterList.add(character);
+        })
+        console.log(characterList);
+        displayCharacterButtons(characterList)
+    })
+
+    function displayCharacterButtons(characterList) {
+        let characterTable = $(".characterTable");
+        characterTable.append(`<input type="radio" name="Bank"> Bank </input>`);
+        characterList.forEach(character => {
+            let newCharacter = $(`<input type="radio" id="${character.name}"> ${character.name}</input>`);
+            characterTable.append(newCharacter);
+        })
+    }
+
+
+
 
     gw2api.account().bank().get().then((bank) => {
 
@@ -122,7 +143,7 @@ function displayResultsToTable(priceCompareData) {
         newRow.append($("<td>", {
             html: `<div class="price">
                 <div class="buyPrice">Buy: ${GetCoinString(resultRow.extractUpgradeThenSalvage.buyPrice * tpTax)} &nbsp;
-                    (${GetComparisonCoinString((resultRow.extractUpgradeThenSalvage.buyPrice * tpTax)- (resultRow.sellToTP.buyPrice * tpTax))})</div>
+                    (${GetComparisonCoinString((resultRow.extractUpgradeThenSalvage.buyPrice * tpTax) - (resultRow.sellToTP.buyPrice * tpTax))})</div>
                 <div class="sellPrice">Sell: ${GetCoinString(resultRow.extractUpgradeThenSalvage.sellPrice * tpTax)} &nbsp;
                     (${GetComparisonCoinString((resultRow.extractUpgradeThenSalvage.sellPrice * tpTax) - (resultRow.sellToTP.sellPrice * tpTax))})</div>
                 </div>`
@@ -181,17 +202,16 @@ function GetCoinString(amountInCopper) {
 }
 
 function GetComparisonCoinString(priceInCopper) {
-    // let positive = (priceInCopper >= 0);
 
     let pricedifference = GetCoinString(Math.abs(priceInCopper));
 
     if (priceInCopper <= 0) {
         pricedifference = '<span class="negative" title="Less profitable than selling to TP directly"> -' + pricedifference + '</span>';
     }
-    else if (priceInCopper > 0 && priceInCopper <=1000){
+    else if (priceInCopper > 0 && priceInCopper <= 1000) {
         pricedifference = '<span class="lessThan10Silver" title="More profitable than selling to TP directly"> +' + pricedifference + '</span>'
     }
-    else if (priceInCopper > 1000 && priceInCopper <= 2000){
+    else if (priceInCopper > 1000 && priceInCopper <= 2000) {
         pricedifference = '<span class="lessThan20Silver" title="More profitable than selling to TP directly"> +' + pricedifference + '</span>'
     }
     else {
@@ -200,3 +220,4 @@ function GetComparisonCoinString(priceInCopper) {
 
     return pricedifference;
 }
+
