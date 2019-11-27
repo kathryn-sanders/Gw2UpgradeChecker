@@ -14,98 +14,89 @@ function GetApiKeyAndRunTool() {
         })
         console.log(characterList);
         displayCharacterButtons(characterList)
-    })
+    }).then(() => {
 
-    function displayCharacterButtons(characterList) {
-        let characterTable = $(".characterTable");
-        characterTable.append(`<input type="radio" name="Bank"> Bank </input>`);
-        characterList.forEach(character => {
-            let newCharacter = $(`<input type="radio" id="${character.name}"> ${character.name}</input>`);
-            characterTable.append(newCharacter);
-        })
-    }
+        if ($("#Bank").is(":checked")) {
+            gw2api.account().bank().get().then((bank) => {
 
+                let itemsToCheckRarity = new Set();
+                let equipUpgrades = {};
+                const ectoItemId = 19721;
 
+                let itemIDtoDetailsDictionary = {};
 
+                let itemsToCheckTP = [];
 
-    gw2api.account().bank().get().then((bank) => {
+                itemsToCheckTP.push(ectoItemId);
 
-        let itemsToCheckRarity = new Set();
-        let equipUpgrades = {};
-        const ectoItemId = 19721;
-
-        let itemIDtoDetailsDictionary = {};
-
-        let itemsToCheckTP = [];
-
-        itemsToCheckTP.push(ectoItemId);
-
-        bank.forEach(item => {
-            if (itemIsTradableWithUpgrades(item)) {
-                itemsToCheckRarity.add(item.id);
-                itemsToCheckRarity.add(item.upgrades[0]);
-            };
-        });
-
-        gw2api.items().many(Array.from(itemsToCheckRarity)).then((itemDetails) => {
-
-            itemDetails.forEach(item => {
-                if (!itemIsUpgradeComponent(item) && itemIsExotic(item)) {
-                    itemsToCheckTP.push(item.id);
-                    itemsToCheckTP.push(item.details.suffix_item_id);
-                    equipUpgrades[item.id] = item.details.suffix_item_id;
-                };
-
-                itemIDtoDetailsDictionary[item.id] = item;
-            });
-
-            return gw2api.commerce().prices().many(itemsToCheckTP)
-                .then((priceInfo) => {
-                    return {
-                        priceInfo,
-                        itemIDtoDetailsDictionary,
+                bank.forEach(item => {
+                    if (itemIsTradableWithUpgrades(item)) {
+                        itemsToCheckRarity.add(item.id);
+                        itemsToCheckRarity.add(item.upgrades[0]);
                     };
                 });
 
-        }).then(({ priceInfo, itemIDtoDetailsDictionary }) => {
+                gw2api.items().many(Array.from(itemsToCheckRarity)).then((itemDetails) => {
 
-            let priceInfoDictionary = {};
+                    itemDetails.forEach(item => {
+                        if (!itemIsUpgradeComponent(item) && itemIsExotic(item)) {
+                            itemsToCheckTP.push(item.id);
+                            itemsToCheckTP.push(item.details.suffix_item_id);
+                            equipUpgrades[item.id] = item.details.suffix_item_id;
+                        };
 
-            priceInfo.forEach(priceInfoItem => {
-                priceInfoDictionary[priceInfoItem.id] = priceInfoItem;
+                        itemIDtoDetailsDictionary[item.id] = item;
+                    });
+
+                    return gw2api.commerce().prices().many(itemsToCheckTP)
+                        .then((priceInfo) => {
+                            return {
+                                priceInfo,
+                                itemIDtoDetailsDictionary,
+                            };
+                        });
+
+                }).then(({ priceInfo, itemIDtoDetailsDictionary }) => {
+
+                    let priceInfoDictionary = {};
+
+                    priceInfo.forEach(priceInfoItem => {
+                        priceInfoDictionary[priceInfoItem.id] = priceInfoItem;
+                    });
+
+                    let priceCompareData = [];
+
+                    Object.keys(equipUpgrades).forEach(equipId => {
+                        let upgradeId = equipUpgrades[equipId];
+                        let newCompareData = {
+                            equip: itemIDtoDetailsDictionary[equipId],
+
+                            upgrade: itemIDtoDetailsDictionary[upgradeId],
+
+                            sellToTP: {
+                                buyPrice: priceInfoDictionary[equipId].buys.unit_price,
+                                sellPrice: priceInfoDictionary[equipId].sells.unit_price,
+                            },
+
+                            extractUpgradeThenSalvage: {
+                                buyPrice: priceInfoDictionary[upgradeId].buys.unit_price + (priceInfoDictionary[ectoItemId].buys.unit_price * 1.2),
+                                sellPrice: priceInfoDictionary[upgradeId].sells.unit_price + (priceInfoDictionary[ectoItemId].sells.unit_price * 1.2),
+                            },
+
+                            blackLionSalvage: {
+                                buyPrice: priceInfoDictionary[upgradeId].buys.unit_price + (priceInfoDictionary[ectoItemId].buys.unit_price * 1.66),
+                                sellPrice: priceInfoDictionary[upgradeId].sells.unit_price + (priceInfoDictionary[ectoItemId].sells.unit_price * 1.66),
+                            },
+                        };
+
+                        priceCompareData.push(newCompareData);
+                    });
+                    displayResultsToTable(priceCompareData)
+                });
+
             });
-
-            let priceCompareData = [];
-
-            Object.keys(equipUpgrades).forEach(equipId => {
-                let upgradeId = equipUpgrades[equipId];
-                let newCompareData = {
-                    equip: itemIDtoDetailsDictionary[equipId],
-
-                    upgrade: itemIDtoDetailsDictionary[upgradeId],
-
-                    sellToTP: {
-                        buyPrice: priceInfoDictionary[equipId].buys.unit_price,
-                        sellPrice: priceInfoDictionary[equipId].sells.unit_price,
-                    },
-
-                    extractUpgradeThenSalvage: {
-                        buyPrice: priceInfoDictionary[upgradeId].buys.unit_price + (priceInfoDictionary[ectoItemId].buys.unit_price * 1.2),
-                        sellPrice: priceInfoDictionary[upgradeId].sells.unit_price + (priceInfoDictionary[ectoItemId].sells.unit_price * 1.2),
-                    },
-
-                    blackLionSalvage: {
-                        buyPrice: priceInfoDictionary[upgradeId].buys.unit_price + (priceInfoDictionary[ectoItemId].buys.unit_price * 1.66),
-                        sellPrice: priceInfoDictionary[upgradeId].sells.unit_price + (priceInfoDictionary[ectoItemId].sells.unit_price * 1.66),
-                    },
-                };
-
-                priceCompareData.push(newCompareData);
-            });
-            displayResultsToTable(priceCompareData)
-        });
-
-    });
+        }
+    })
 }
 
 function itemIsTradableWithUpgrades(item) {
@@ -219,5 +210,14 @@ function GetComparisonCoinString(priceInCopper) {
     }
 
     return pricedifference;
+}
+
+function displayCharacterButtons(characterList) {
+    let characterTable = $(".characterTable");
+    characterTable.append(`<input type="radio" id="Bank" checked> Bank </input>`);
+    characterList.forEach(character => {
+        let newCharacter = $(`<input type="radio" id="${character.name}"> ${character.name}</input>`);
+        characterTable.append(newCharacter);
+    })
 }
 
