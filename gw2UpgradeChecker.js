@@ -2,6 +2,7 @@
 function GetApiKeyAndRunTool() {
 
     $("#resultsTbody").children().remove();
+    $("#characterTable").children().remove();
 
     let apiKey = $("#apiKeyInput").val();
 
@@ -16,7 +17,7 @@ function GetApiKeyAndRunTool() {
         displayCharacterButtons(characterList)
     }).then(() => {
 
-        if ($("#Bank").is(":checked")) {
+        if ($("#bank").is(":checked")) {
             gw2api.account().bank().get().then((bank) => {
 
                 let itemsToCheckRarity = new Set();
@@ -213,10 +214,12 @@ function GetComparisonCoinString(priceInCopper) {
 }
 
 function displayCharacterButtons(characterList) {
-    let characterTable = $(".characterTable");
-    characterTable.append(`<input type="radio" id="Bank" checked> Bank </input>`);
+    const characterTable = $("#characterTable");
+    // characterTable.append(`<form></form>`);
+    characterTable.append($(`<label><input class="characterButton" type="radio" name="characterButton" id="bank" checked>Bank</input></label>`));
     characterList.forEach(character => {
-        let newCharacter = $(`<input type="radio" id="${character.name}"> ${character.name}</input>`);
+        let newCharacter = $(`<label><input class="characterButton" type="radio" name="characterButton" id="${character.name}">${character.name}</input></label>`);
+        newCharacter.innerText = `${character.name}`;
         characterTable.append(newCharacter);
     })
 }
